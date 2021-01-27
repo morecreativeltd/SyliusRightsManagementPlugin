@@ -8,7 +8,7 @@ use BeHappy\SyliusRightsManagementPlugin\Entity\AdminUserInterface;
 use BeHappy\SyliusRightsManagementPlugin\Entity\GroupInterface;
 use BeHappy\SyliusRightsManagementPlugin\Service\GroupServiceInterface;
 use Sylius\Bundle\UiBundle\Menu\Event\MenuBuilderEvent;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Class AdminMenuListener
@@ -19,16 +19,16 @@ class AdminMenuListener
 {
     /** @var GroupServiceInterface */
     protected $groupService;
-    /** @var TokenStorage */
+    /** @var TokenStorageInterface */
     protected $tokenStorage;
 
     /**
      * AdminMenuListener constructor.
      *
      * @param GroupServiceInterface $groupService
-     * @param TokenStorage $tokenStorage
+     * @param TokenStorageInterface $tokenStorage
      */
-    public function __construct(GroupServiceInterface $groupService, TokenStorage $tokenStorage)
+    public function __construct(GroupServiceInterface $groupService, TokenStorageInterface $tokenStorage)
     {
         $this->groupService = $groupService;
         $this->tokenStorage = $tokenStorage;

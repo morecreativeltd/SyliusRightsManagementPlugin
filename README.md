@@ -8,7 +8,7 @@ A rights management plugin for Sylius.
 $ composer require behappy/rights-management-plugin
 ```
 
-2. Enable the plugin in config/buncles.php:
+2. Enable the plugin in config/bundles.php:
 ```php
 public function registerBundles(): array
 {

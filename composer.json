@@ -1,5 +1,5 @@
 {
-    "name": "roshyo/rights-management-plugin",
+    "name": "botme/rights-management-plugin",
     "type": "sylius-plugin",
     "description": "A rights management plugin for Sylius.",
     "license": "MIT",
@@ -23,7 +23,6 @@
     ],
     "require": {
         "php": "^7.4",
-
         "sylius/sylius": "^1.7",
         "symfony/dotenv": "^4.4",
         "symfony/flex": "^1.2"
@@ -62,7 +61,9 @@
         }
     },
     "autoload-dev": {
-        "classmap": ["tests/Application/app/AppKernel.php"]
+        "classmap": [
+            "tests/Application/app/AppKernel.php"
+        ]
     },
     "extra": {
         "branch-alias": {

@@ -21,7 +21,7 @@ final class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('behappy_rights_management_plugin');
-        
+
         $rootNode
             ->children()
                 ->arrayNode('rights')
@@ -38,6 +38,7 @@ final class Configuration implements ConfigurationInterface
                             ->end()
                                 ->scalarNode('redirect_to')->end()
                                 ->scalarNode('redirect_message')->end()
+                                ->scalarNode('security')->end()
                                 ->booleanNode('default_granted')
                             ->end()
                         ->end()
@@ -45,7 +46,7 @@ final class Configuration implements ConfigurationInterface
                 ->end()
             ->end()
         ;
-        
+
         return $treeBuilder;
     }
 }

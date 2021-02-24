@@ -48,3 +48,9 @@ services:
         - '@security.token_storage'
         tags:
         - { name: kernel.event_listener, event: kernel.controller }
+    
+    be_happy.voter.is_resource_granted:
+        class: BeHappy\SyliusRightsManagementPlugin\Security\IsResourceGranted
+        arguments:
+            - '@request_stack'
+            - '@security.token_storage'

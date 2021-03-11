@@ -22,7 +22,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  */
 class ControllerListener
 {
-    
+
     /** @var array|null */
     protected $arrayRouter;
     /** @var GroupServiceInterface */
@@ -33,7 +33,7 @@ class ControllerListener
     protected $session;
     /** @var TokenStorageInterface */
     protected $tokenStorage;
-    
+
     /**
      * ControllerListener constructor.
      *
@@ -50,7 +50,7 @@ class ControllerListener
         $this->session = $session;
         $this->tokenStorage = $tokenStorage;
     }
-    
+
     /**
      * @param FilterControllerEvent $event
      */
@@ -60,8 +60,8 @@ class ControllerListener
         $route = $request->attributes->get('_route');
         $controller = $event->getController();
         $service = $this->groupService;
-        
-        if ($controller[0] instanceof Controller) {
+
+        if ($controller[0] instanceof Controller && !empty($route)) {
             $user = $this->getUser();
             if ($user instanceof AdminUserInterface && $user->getGroup() instanceof Group) {
                 if (!$service->isUserGranted($route, $user)) {
@@ -75,7 +75,7 @@ class ControllerListener
             }
         }
     }
-    
+
     /**
      * @param string                $route
      * @param string                $message
@@ -88,7 +88,7 @@ class ControllerListener
             return new RedirectResponse($route);
         });
     }
-    
+
     /**
      * @return UserInterface|null
      */
@@ -97,12 +97,12 @@ class ControllerListener
         if (null === $token = $this->tokenStorage->getToken()) {
             return null;
         }
-        
+
         if (!is_object($user = $token->getUser())) {
             // e.g. anonymous authentication
             return null;
         }
-        
+
         return $user;
     }
 }

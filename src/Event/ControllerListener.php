@@ -61,7 +61,7 @@ class ControllerListener
         $controller = $event->getController();
         $service = $this->groupService;
         
-        if ($controller[0] instanceof Controller) {
+        if ($controller[0] instanceof Controller && !empty($route)) {
             $user = $this->getUser();
             if ($user instanceof AdminUserInterface && $user->getGroup() instanceof Group) {
                 if (!$service->isUserGranted($route, $user)) {

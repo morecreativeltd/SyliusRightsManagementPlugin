@@ -102,7 +102,7 @@ class ControllerListener
             // e.g. anonymous authentication
             return null;
         }
-
+        
         return $user;
     }
-} 
+}

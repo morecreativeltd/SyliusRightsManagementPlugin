@@ -21,7 +21,7 @@ final class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder('behappy_rights_management_plugin');
         $rootNode = method_exists(TreeBuilder::class, 'getRootNode') ? $treeBuilder->getRootNode() : $treeBuilder->root('behappy_rights_management_plugin');
-
+        
         $rootNode
             ->children()
                 ->arrayNode('rights')
@@ -45,7 +45,7 @@ final class Configuration implements ConfigurationInterface
                 ->end()
             ->end()
         ;
-
+        
         return $treeBuilder;
     }
 }

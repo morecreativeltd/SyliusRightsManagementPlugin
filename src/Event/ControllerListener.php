@@ -23,7 +23,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  */
 class ControllerListener
 {
-
+    
     /** @var array|null */
     protected $arrayRouter;
     /** @var GroupServiceInterface */
@@ -34,7 +34,7 @@ class ControllerListener
     protected $session;
     /** @var TokenStorageInterface */
     protected $tokenStorage;
-
+    
     /**
      * ControllerListener constructor.
      *
@@ -51,7 +51,7 @@ class ControllerListener
         $this->session = $session;
         $this->tokenStorage = $tokenStorage;
     }
-
+    
     /**
      * @param FilterControllerEvent $event
      */

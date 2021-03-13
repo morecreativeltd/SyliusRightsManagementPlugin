@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
+use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -22,7 +23,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  */
 class ControllerListener
 {
-    
+
     /** @var array|null */
     protected $arrayRouter;
     /** @var GroupServiceInterface */
@@ -33,7 +34,7 @@ class ControllerListener
     protected $session;
     /** @var TokenStorageInterface */
     protected $tokenStorage;
-    
+
     /**
      * ControllerListener constructor.
      *
@@ -50,11 +51,11 @@ class ControllerListener
         $this->session = $session;
         $this->tokenStorage = $tokenStorage;
     }
-    
+
     /**
      * @param FilterControllerEvent $event
      */
-    public function onKernelController(FilterControllerEvent $event): void
+    public function onKernelController(ControllerEvent $event): void
     {
         $request = $event->getRequest();
         $route = $request->attributes->get('_route');
@@ -63,7 +64,7 @@ class ControllerListener
         
         if ($controller[0] instanceof Controller && !empty($route)) {
             $user = $this->getUser();
-            if ($user instanceof AdminUserInterface && $user->getGroup() instanceof Group) {
+            if ($user instanceof AdminUserInterface && !empty($user->getGroup()) && $user->getGroup() instanceof Group) {
                 if (!$service->isUserGranted($route, $user)) {
                     $right = $service->getRight($route, $user);
                     $redirectRoute = $service->getRedirectRoute($right);

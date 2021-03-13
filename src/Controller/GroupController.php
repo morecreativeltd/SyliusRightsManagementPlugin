@@ -132,7 +132,7 @@ class GroupController extends ResourceController
                 if ($event->hasResponse()) {
                     return $event->getResponse();
                 }
-
+                
                 return $this->redirectHandler->redirectToResource($configuration, $resource);
             }
             

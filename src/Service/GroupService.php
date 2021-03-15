@@ -30,7 +30,7 @@ class GroupService implements GroupServiceInterface, ContainerAwareInterface
     protected $router;
     /** @var RepositoryInterface */
     protected $rightRepository;
-
+    
     /**
      * GroupService constructor.
      *

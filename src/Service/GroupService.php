@@ -138,12 +138,11 @@ class GroupService implements GroupServiceInterface, ContainerAwareInterface
             return false;
         }
 
-        if(
-            !empty($requestConfigs) &&
-            !strpos($requestConfigs->get('_controller'), ":indexAction") &&
-            !strpos($requestConfigs->get('_controller'), ":createAction") &&
-            !empty($user->getShop()) && $user->getShop()->getId() != $this->getResourceShopId($requestConfigs)
-        ) {
+        $resourceId = $this->getResourceShopId($requestConfigs);
+        if($resourceId === false)
+            return true;
+
+        if(!empty($user->getShop()) && $user->getShop()->getId() != $resourceId) {
             return false;
         }
 
@@ -245,26 +244,19 @@ class GroupService implements GroupServiceInterface, ContainerAwareInterface
 
     public function getResourceShopId($config)
     {
-        if(empty($config) || strpos($config->get('_controller'), ":indexAction")){
-            return null;
+        if(empty($config) || strpos($config->get('_controller'), ":indexAction")) {
+            return false;
         }
         $serviceName = str_replace(['sylius.controller.', ':showAction', ':updateAction', ':deleteAction'], '', $config->get('_controller'));
         $repoName = 'sylius.repository.'. $serviceName;
 
-        if(!$this->container->has($repoName)) {
-           return null;
+        if(!$this->container->has($repoName) || empty($config->get('id'))) {
+           return false;
         }
 
-        if(empty($config->get('id'))) {
-            return null;
-        }
         $resource = $this->container->get($repoName)->find($config->get('id'));
-        if(empty($resource)) {
-            return null;
-        }
-
-        if(!method_exists($resource, 'getShop')) {
-            return null;
+        if(empty($resource) || !method_exists($resource, 'getShop')) {
+            return false;
         }
 
         return $resource->getShop()->getId();

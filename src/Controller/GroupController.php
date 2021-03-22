@@ -81,21 +81,20 @@ class GroupController extends ResourceController
         if (!$configuration->isHtmlRequest()) {
             return $this->viewHandler->handle($configuration, View::create($form, Response::HTTP_BAD_REQUEST));
         }
-        
-        $this->eventDispatcher->dispatchInitializeEvent(ResourceActions::CREATE, $configuration, $newResource);
-        
-        $view = View::create()
-            ->setData([
-                'configuration' => $configuration,
-                'metadata' => $this->metadata,
-                'resource' => $newResource,
-                $this->metadata->getName() => $newResource,
-                'form' => $form->createView(),
-            ])
-            ->setTemplate($configuration->getTemplate(ResourceActions::CREATE . '.html'))
-        ;
-        
-        return $this->viewHandler->handle($configuration, $view);
+
+        $initializeEvent = $this->eventDispatcher->dispatchInitializeEvent(ResourceActions::CREATE, $configuration, $newResource);
+        $initializeEventResponse = $initializeEvent->getResponse();
+        if (null !== $initializeEventResponse) {
+            return $initializeEventResponse;
+        }
+
+        return $this->render($configuration->getTemplate(ResourceActions::CREATE . '.html'), [
+            'configuration' => $configuration,
+            'metadata' => $this->metadata,
+            'resource' => $newResource,
+            $this->metadata->getName() => $newResource,
+            'form' => $form->createView(),
+        ]);
     }
     
     /**
@@ -139,7 +138,6 @@ class GroupController extends ResourceController
             
             $this->resourceUpdateHandler->handle($resource, $configuration, $this->manager);
             
-            
             $postEvent = $this->eventDispatcher->dispatchPostEvent(ResourceActions::UPDATE, $configuration, $resource);
             
             if (!$configuration->isHtmlRequest()) {
@@ -161,19 +159,18 @@ class GroupController extends ResourceController
             return $this->viewHandler->handle($configuration, View::create($form, Response::HTTP_BAD_REQUEST));
         }
         
-        $this->eventDispatcher->dispatchInitializeEvent(ResourceActions::UPDATE, $configuration, $resource);
+        $initializeEvent = $this->eventDispatcher->dispatchInitializeEvent(ResourceActions::UPDATE, $configuration, $resource);
+        $initializeEventResponse = $initializeEvent->getResponse();
+        if (null !== $initializeEventResponse) {
+            return $initializeEventResponse;
+        }
         
-        $view = View::create()
-            ->setData([
-                'configuration' => $configuration,
-                'metadata' => $this->metadata,
-                'resource' => $resource,
-                $this->metadata->getName() => $resource,
-                'form' => $form->createView(),
-            ])
-            ->setTemplate($configuration->getTemplate(ResourceActions::UPDATE . '.html'))
-        ;
-        
-        return $this->viewHandler->handle($configuration, $view);
+        return $this->render($configuration->getTemplate(ResourceActions::UPDATE . '.html'), [
+            'configuration' => $configuration,
+            'metadata' => $this->metadata,
+            'resource' => $resource,
+            $this->metadata->getName() => $resource,
+            'form' => $form->createView(),
+        ]);
     }
 }

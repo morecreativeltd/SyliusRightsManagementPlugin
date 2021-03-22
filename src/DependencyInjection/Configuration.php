@@ -19,8 +19,8 @@ final class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('behappy_rights_management_plugin');
+        $treeBuilder = new TreeBuilder('behappy_rights_management_plugin');
+        $rootNode = method_exists(TreeBuilder::class, 'getRootNode') ? $treeBuilder->getRootNode() : $treeBuilder->root('behappy_rights_management_plugin');
         
         $rootNode
             ->children()

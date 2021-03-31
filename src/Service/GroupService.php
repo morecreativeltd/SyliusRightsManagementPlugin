@@ -8,6 +8,9 @@ use BeHappy\SyliusRightsManagementPlugin\Entity\Right;
 use BeHappy\SyliusRightsManagementPlugin\Entity\RightInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -15,8 +18,10 @@ use Symfony\Component\Routing\RouterInterface;
  *
  * @package BeHappy\SyliusRightsManagementPlugin\Service
  */
-class GroupService implements GroupServiceInterface
+class GroupService implements GroupServiceInterface, ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /** @var array|null */
     protected $arrayRouter;
     /** @var array */
@@ -112,8 +117,9 @@ class GroupService implements GroupServiceInterface
      *
      * @return bool
      */
-    public function isUserGranted(string $route, AdminUserInterface $user): bool
+    public function isUserGranted(string $route, AdminUserInterface $user, $requestConfigs = null): bool
     {
+        # is security exists grant or deny
         if (preg_match ("/sylius_admin_get_/", $route)) {
             return true;
         }
@@ -131,7 +137,15 @@ class GroupService implements GroupServiceInterface
         if (!$right instanceof Right){
             return false;
         }
-        
+
+        $resourceId = $this->getResourceShopId($requestConfigs);
+        if($resourceId === false)
+            return true;
+
+        if(!empty($user->getShop()) && $user->getShop()->getId() != $resourceId) {
+            return false;
+        }
+
         return $right->isGranted();
     }
 
@@ -228,4 +242,23 @@ class GroupService implements GroupServiceInterface
         return $redirectMessage;
     }
 
+    public function getResourceShopId($config)
+    {
+        if(empty($config) || strpos($config->get('_controller'), ":indexAction")) {
+            return false;
+        }
+        $serviceName = str_replace(['sylius.controller.', ':showAction', ':updateAction', ':deleteAction'], '', $config->get('_controller'));
+        $repoName = 'sylius.repository.'. $serviceName;
+
+        if(!$this->container->has($repoName) || empty($config->get('id'))) {
+           return false;
+        }
+
+        $resource = $this->container->get($repoName)->find($config->get('id'));
+        if(empty($resource) || !method_exists($resource, 'getShop')) {
+            return false;
+        }
+
+        return $resource->getShop()->getId();
+    }
 }

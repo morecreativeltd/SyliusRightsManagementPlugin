@@ -7,6 +7,7 @@ namespace BeHappy\SyliusRightsManagementPlugin\Event;
 use BeHappy\SyliusRightsManagementPlugin\Entity\AdminUserInterface;
 use BeHappy\SyliusRightsManagementPlugin\Entity\Group;
 use BeHappy\SyliusRightsManagementPlugin\Service\GroupServiceInterface;
+use Sylius\Bundle\ResourceBundle\Controller\ResourceController;
 use Sylius\Component\User\Model\UserInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -61,10 +62,10 @@ class ControllerListener
         $controller = $event->getController();
         $service = $this->groupService;
         
-        if ($controller[0] instanceof Controller && !empty($route)) {
+        if ($controller[0] instanceof ResourceController && !empty($route)) {
             $user = $this->getUser();
             if ($user instanceof AdminUserInterface && $user->getGroup() instanceof Group) {
-                if (!$service->isUserGranted($route, $user)) {
+                if (!$service->isUserGranted($route, $user, $request->attributes)) {
                     $right = $service->getRight($route, $user);
                     $redirectRoute = $service->getRedirectRoute($right);
                     $redirectMessage = $service->getRedirectMessage($right);

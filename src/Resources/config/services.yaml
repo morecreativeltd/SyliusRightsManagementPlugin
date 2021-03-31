@@ -36,8 +36,10 @@ services:
         - '%behappy.rights_management.rights%'
         - '@router'
         - '@be_happy_rights_management.repository.right'
+        - '@service_container'
         calls:
         - { method: initializeArrayRouter, arguments: [] }
+        - { method: setContainer, arguments: [ '@service_container' ] }
 
     be_happy.rights_management.listener.request:
         class: BeHappy\SyliusRightsManagementPlugin\Event\ControllerListener

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace BeHappy\SyliusRightsManagementPlugin\Event;
 
+use App\Controller\EmptyController;
 use BeHappy\SyliusRightsManagementPlugin\Entity\AdminUserInterface;
 use BeHappy\SyliusRightsManagementPlugin\Entity\Group;
 use BeHappy\SyliusRightsManagementPlugin\Service\GroupServiceInterface;
 use Sylius\Bundle\ResourceBundle\Controller\ResourceController;
+use Sylius\Bundle\UiBundle\Controller\SecurityController;
 use Sylius\Component\User\Model\UserInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -23,7 +25,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  */
 class ControllerListener
 {
-    
+
     /** @var array|null */
     protected $arrayRouter;
     /** @var GroupServiceInterface */
@@ -34,7 +36,7 @@ class ControllerListener
     protected $session;
     /** @var TokenStorageInterface */
     protected $tokenStorage;
-    
+
     /**
      * ControllerListener constructor.
      *
@@ -51,20 +53,23 @@ class ControllerListener
         $this->session = $session;
         $this->tokenStorage = $tokenStorage;
     }
-    
+
     /**
      * @param FilterControllerEvent $event
      */
-    public function onKernelController(FilterControllerEvent $event): void
+    public function onKernelController(FilterControllerEvent $event)
     {
         $request = $event->getRequest();
         $route = $request->attributes->get('_route');
         $controller = $event->getController();
         $service = $this->groupService;
-        
-        if ($controller[0] instanceof ResourceController && !empty($route)) {
+
+        if ($controller[0] instanceof ResourceController && !empty($route) && !empty(strpos($route, 'admin'))) {
             $user = $this->getUser();
-            if ($user instanceof AdminUserInterface && $user->getGroup() instanceof Group) {
+            if ($user instanceof AdminUserInterface && empty($user->getGroup())) {
+                # TODO redirect to 404 on null group
+//                $this->redirectUser('/', "Unauthorized", $event);
+            } else if ($user instanceof AdminUserInterface && $user->getGroup() instanceof Group) {
                 if (!$service->isUserGranted($route, $user, $request->attributes)) {
                     $right = $service->getRight($route, $user);
                     $redirectRoute = $service->getRedirectRoute($right);
@@ -76,7 +81,7 @@ class ControllerListener
             }
         }
     }
-    
+
     /**
      * @param string                $route
      * @param string                $message
@@ -89,7 +94,7 @@ class ControllerListener
             return new RedirectResponse($route);
         });
     }
-    
+
     /**
      * @return UserInterface|null
      */
@@ -98,12 +103,12 @@ class ControllerListener
         if (null === $token = $this->tokenStorage->getToken()) {
             return null;
         }
-        
+
         if (!is_object($user = $token->getUser())) {
             // e.g. anonymous authentication
             return null;
         }
-        
+
         return $user;
     }
 }

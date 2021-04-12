@@ -76,13 +76,6 @@ be_happy_sylius_rights_management:
                 redirect_to: sylius_admin_dashboard
                 redirect_message: "be_happy_rights_management.message.access_denied"
 
-        user:
-            all:
-                name: 'be_happy_rights_management.rights.admin_user.all'
-                routes: ['sylius_admin_admin_user_*']
-                redirect_to: sylius_admin_dashboard
-                redirect_message: "be_happy_rights_management.message.access_denied"
-
         company_data:
             all:
                 name: 'be_happy_rights_management.rights.company_data.all'

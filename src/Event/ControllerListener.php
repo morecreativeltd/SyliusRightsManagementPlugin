@@ -61,7 +61,7 @@ class ControllerListener
         $route = $request->attributes->get('_route');
         $controller = $event->getController();
         $service = $this->groupService;
-           
+        
         if (is_array($controller) && $controller[0] instanceof Controller && !empty($route) && !empty(strpos($route, 'admin'))) {
             $user = $this->getUser();
             if ($user instanceof AdminUserInterface && !empty($user->getGroup()) && $user->getGroup() instanceof Group) {

@@ -64,7 +64,7 @@ class ControllerListener
         $controller = $event->getController();
         $service = $this->groupService;
 
-        if ($controller[0] instanceof ResourceController && !empty($route) && !empty(strpos($route, 'admin'))) {
+        if (is_array($controller) && $controller[0] instanceof ResourceController && !empty($route) && !empty(strpos($route, 'admin'))) {
             $user = $this->getUser();
             if ($user instanceof AdminUserInterface && empty($user->getGroup())) {
                 # TODO redirect to 404 on null group

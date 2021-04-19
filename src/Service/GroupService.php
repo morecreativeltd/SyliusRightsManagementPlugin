@@ -30,7 +30,7 @@ class GroupService implements GroupServiceInterface, ContainerAwareInterface
     protected $router;
     /** @var RepositoryInterface */
     protected $rightRepository;
-    
+
     /**
      * GroupService constructor.
      *
@@ -112,9 +112,10 @@ class GroupService implements GroupServiceInterface, ContainerAwareInterface
     }
 
     /**
-     * @param string             $route
+     * @param string $route
      * @param AdminUserInterface $user
      *
+     * @param null $requestConfigs
      * @return bool
      */
     public function isUserGranted(string $route, AdminUserInterface $user, $requestConfigs = null): bool
@@ -138,15 +139,31 @@ class GroupService implements GroupServiceInterface, ContainerAwareInterface
             return false;
         }
 
+        $isGranted = $right->isGranted();
+        if($requestConfigs != null && $isGranted){
+            $isResourceGranted = $this->isResourceGranted($user, $requestConfigs);
+            if($isResourceGranted === true) {
+                return true;
+            } else if($isResourceGranted === false) {
+                return false;
+            }
+        }
+
+        return $isGranted;
+    }
+
+    public function isResourceGranted($user, $requestConfigs)
+    {
         $resourceId = $this->getResourceShopId($requestConfigs);
-        if($resourceId === false)
+        if($resourceId === false) {
             return true;
+        }
 
         if(!empty($user->getShop()) && $user->getShop()->getId() != $resourceId) {
             return false;
         }
 
-        return $right->isGranted();
+        return null;
     }
 
     /**

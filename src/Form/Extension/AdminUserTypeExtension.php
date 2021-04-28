@@ -39,9 +39,4 @@ class AdminUserTypeExtension extends AbstractTypeExtension
     {
         return AdminUserType::class;
     }
-
-    public function getExtendedTypes(): array
-    {
-        return [AdminUserType::class];
-    }
 }

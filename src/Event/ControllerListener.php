@@ -73,9 +73,23 @@ class ControllerListener
                 if (!$service->isUserGranted($route, $user, $request->attributes)) {
                     $right = $service->getRight($route, $user);
                     $redirectRoute = $service->getRedirectRoute($right);
-                    $redirectMessage = $service->getRedirectMessage($right);
-                    if (!$this->requestStack->getCurrentRequest()->isXmlHttpRequest()) {
-                        $this->redirectUser($redirectRoute, $redirectMessage, $event);
+
+                    if(!$service->isResourceGranted($user, $request->attributes)) {
+                        $redirectMessage = $service->getRedirectMessage($right);
+                        if (!$this->requestStack->getCurrentRequest()->isXmlHttpRequest()) {
+                            $this->redirectUser($redirectRoute, $redirectMessage, $event);
+                        }
+                    }
+
+                    if($request->headers->get('referer')) {
+                        $re = '/admin\/users\/[0-9]*\/edit/i';
+                        preg_match($re, $request->headers->get('referer'), $matches, PREG_OFFSET_CAPTURE, 0);
+                    }
+
+                    if(isset($matches) && empty($matches)) {
+                        $event->setController(function() use ($route) {
+                            return new RedirectResponse($route);
+                        });
                     }
                 }
             }

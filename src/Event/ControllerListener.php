@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BeHappy\SyliusRightsManagementPlugin\Event;
 
 use App\Controller\EmptyController;
+use App\Entity\User\AdminUser;
 use BeHappy\SyliusRightsManagementPlugin\Entity\AdminUserInterface;
 use BeHappy\SyliusRightsManagementPlugin\Entity\Group;
 use BeHappy\SyliusRightsManagementPlugin\Service\GroupServiceInterface;
@@ -66,10 +67,14 @@ class ControllerListener
 
         if (is_array($controller) && $controller[0] instanceof ResourceController && !empty($route) && !empty(strpos($route, 'admin'))) {
             $user = $this->getUser();
-            if ($user instanceof AdminUserInterface && empty($user->getGroup())) {
+            if ($user instanceof AdminUserInterface && empty($user->getGroup()) ) {
                 # TODO redirect to 404 on null group
-//                $this->redirectUser('/', "Unauthorized", $event);
-            } else if ($user instanceof AdminUserInterface && $user->getGroup() instanceof Group) {
+                $this->redirectUser('/404', "Unauthorized", $event);
+            } else if ($user instanceof AdminUserInterface &&
+                $user->getGroup() instanceof Group &&
+                $user->getGroup()->getCode() !== AdminUser::SUPER_ADMIN_GROUP &&
+                $route != "app_admin_user_register"
+            ) {
                 if (!$service->isUserGranted($route, $user, $request->attributes)) {
                     $right = $service->getRight($route, $user);
                     $redirectRoute = $service->getRedirectRoute($right);
